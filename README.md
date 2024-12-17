@@ -32,7 +32,7 @@ Feel free to create mutliple Parameter files for different environments or locat
 # Deployment
 To deploy the blueprint, you can use the following command:
 
-```pwsh
+```bash
 az deployment group create --resource-group <resource-group> --template-file ./infrastructure/app-infrastructure.bicep --parameters @app-parameters.json --parameters "vmAdminPassword=<yourPassword>"
 ```
 
