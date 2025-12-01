@@ -54,7 +54,7 @@ module virtualMachine './modules/virtualMachine.bicep' = if (vmAdminPassword != 
   params: {
     virtualMachineName: '${prefix}-vm-${instance}'
     location: location
-    subnetId: vnet.outputs.subnetVnetIds.deployment
+    subnetId: vnet.outputs.subnetVnetIds.jumphost
     adminUsername: 'developer'
     adminPassword: vmAdminPassword
     vmSize: 'Standard_D4ads_v5'

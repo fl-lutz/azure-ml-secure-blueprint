@@ -11,8 +11,8 @@ var addressSpace = '10.0.0.0/20'
 @description('The address space of the AzureBastionSubnet')
 var addressSpaceAzureBastionSubnet = '10.0.0.0/26'
 
-@description('The address space of the deployment subnet')
-var addressSpaceDeploymentSubnet = '10.0.4.0/22'
+@description('The address space of the jumphost subnet')
+var addressSpaceJumphostSubnet = '10.0.4.0/22'
 
 @description('The address space of the endpoint subnet')
 var addressSpaceEndpointsSubnet = '10.0.8.0/22'
@@ -28,9 +28,9 @@ resource vnet 'Microsoft.Network/virtualNetworks@2022-05-01' = {
     }
     subnets: [
       {
-        name: 'deployment'
+        name: 'jumphost'
         properties: {
-          addressPrefix: addressSpaceDeploymentSubnet
+          addressPrefix: addressSpaceJumphostSubnet
         }
       }
       {
@@ -52,13 +52,13 @@ resource vnet 'Microsoft.Network/virtualNetworks@2022-05-01' = {
 output virtualNetworkId string = vnet.id
 
 output subnetVnetIds object = {
-  deployment: resourceId('Microsoft.Network/virtualNetworks/subnets', vnet.name, 'deployment')
+  jumphost: resourceId('Microsoft.Network/virtualNetworks/subnets', vnet.name, 'jumphost')
   endpoints: resourceId('Microsoft.Network/virtualNetworks/subnets', vnet.name, 'endpoints')
   AzureBastionSubnet: resourceId('Microsoft.Network/virtualNetworks/subnets', vnet.name, 'AzureBastionSubnet')
 }
 
 output subnetAddressSpaces object = {
   AzureBastionSubnet: vnet.properties.subnets[0].properties.addressPrefix
-  deployment: vnet.properties.subnets[1].properties.addressPrefix
+  jumphost: vnet.properties.subnets[1].properties.addressPrefix
   endpoints: vnet.properties.subnets[2].properties.addressPrefix
 }
