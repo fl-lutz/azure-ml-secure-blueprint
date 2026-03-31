@@ -25,6 +25,7 @@ output logAnalyticsWorkspaceId string = logAnalyticsWorkspace.id
 output logAnalyticsWorkspaceCustomerId object = {
   customerIds: logAnalyticsWorkspace.properties.customerId
 }
+@secure()
 output logAnalyticsWorkspacePrimarySharedKey object = {
   sharedKeys: logAnalyticsWorkspace.listKeys().primarySharedKey
 }
