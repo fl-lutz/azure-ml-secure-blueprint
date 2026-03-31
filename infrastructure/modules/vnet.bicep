@@ -17,6 +17,63 @@ var addressSpaceJumphostSubnet = '10.0.4.0/22'
 @description('The address space of the endpoint subnet')
 var addressSpaceEndpointsSubnet = '10.0.8.0/22'
 
+resource jumphostNsg 'Microsoft.Network/networkSecurityGroups@2024-03-01' = {
+  name: '${vnetName}-jumphost-nsg'
+  location: location
+  properties: {
+    securityRules: [
+      {
+        name: 'DenyInternetInbound'
+        properties: {
+          priority: 4000
+          direction: 'Inbound'
+          access: 'Deny'
+          protocol: '*'
+          sourcePortRange: '*'
+          destinationPortRange: '*'
+          sourceAddressPrefix: 'Internet'
+          destinationAddressPrefix: '*'
+        }
+      }
+      {
+        name: 'AllowBastionRDP'
+        properties: {
+          priority: 100
+          direction: 'Inbound'
+          access: 'Allow'
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRange: '3389'
+          sourceAddressPrefix: 'VirtualNetwork'
+          destinationAddressPrefix: '*'
+        }
+      }
+    ]
+  }
+}
+
+resource endpointsNsg 'Microsoft.Network/networkSecurityGroups@2024-03-01' = {
+  name: '${vnetName}-endpoints-nsg'
+  location: location
+  properties: {
+    securityRules: [
+      {
+        name: 'DenyInternetInbound'
+        properties: {
+          priority: 4000
+          direction: 'Inbound'
+          access: 'Deny'
+          protocol: '*'
+          sourcePortRange: '*'
+          destinationPortRange: '*'
+          sourceAddressPrefix: 'Internet'
+          destinationAddressPrefix: '*'
+        }
+      }
+    ]
+  }
+}
+
 resource vnet 'Microsoft.Network/virtualNetworks@2022-05-01' = {
   name: vnetName
   location: location
@@ -31,12 +88,18 @@ resource vnet 'Microsoft.Network/virtualNetworks@2022-05-01' = {
         name: 'jumphost'
         properties: {
           addressPrefix: addressSpaceJumphostSubnet
+          networkSecurityGroup: {
+            id: jumphostNsg.id
+          }
         }
       }
       {
         name: 'endpoints'
         properties: {
           addressPrefix: addressSpaceEndpointsSubnet
+          networkSecurityGroup: {
+            id: endpointsNsg.id
+          }
         }
       }
       {
