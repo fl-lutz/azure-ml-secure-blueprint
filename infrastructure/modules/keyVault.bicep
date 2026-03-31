@@ -61,6 +61,8 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-02-01' = {
           ipRules: []
         }
       : {}
+    enablePurgeProtection: true
+    softDeleteRetentionInDays: 90
   }
 }
 
