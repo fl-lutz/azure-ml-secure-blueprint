@@ -18,19 +18,39 @@ param adminUsername string
 @secure()
 param adminPassword string
 
-module pip './publicIp.bicep' = {
-  name: '${virtualMachineName}-pip'
-  params: {
-    publicIpName: '${virtualMachineName}-pip'
-    location: location
-    publicIpSku: 'Basic'
-    publicIpAllocationMethod: 'Dynamic'
-  }
-}
-
 resource nsg 'Microsoft.Network/networkSecurityGroups@2024-03-01' = {
   name: '${virtualMachineName}-nsg'
   location: location
+  properties: {
+    securityRules: [
+      {
+        name: 'DenyInternetInbound'
+        properties: {
+          priority: 4000
+          direction: 'Inbound'
+          access: 'Deny'
+          protocol: '*'
+          sourcePortRange: '*'
+          destinationPortRange: '*'
+          sourceAddressPrefix: 'Internet'
+          destinationAddressPrefix: '*'
+        }
+      }
+      {
+        name: 'AllowBastionRDP'
+        properties: {
+          priority: 100
+          direction: 'Inbound'
+          access: 'Allow'
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRange: '3389'
+          sourceAddressPrefix: 'VirtualNetwork'
+          destinationAddressPrefix: '*'
+        }
+      }
+    ]
+  }
 }
 
 resource nic 'Microsoft.Network/networkInterfaces@2024-03-01' = {
@@ -44,9 +64,6 @@ resource nic 'Microsoft.Network/networkInterfaces@2024-03-01' = {
           privateIPAllocationMethod: 'Dynamic'
           subnet: {
             id: subnetId
-          }
-          publicIPAddress: {
-            id: pip.outputs.publicIpId
           }
         }
       }
@@ -93,6 +110,9 @@ resource vm 'Microsoft.Compute/virtualMachines@2024-03-01' = {
           id: nic.id
         }
       ]
+    }
+    securityProfile: {
+      encryptionAtHost: true
     }
   }
 }
