@@ -22,6 +22,7 @@ resource storage 'Microsoft.Storage/storageAccounts@2023-01-01' = {
     allowBlobPublicAccess: false
     publicNetworkAccess: 'Disabled'
     minimumTlsVersion: 'TLS1_2'
+    allowSharedKeyAccess: false
   }
 }
 
@@ -37,4 +38,5 @@ resource storage 'Microsoft.Storage/storageAccounts@2023-01-01' = {
 
 output storageAccountName string = storage.name
 output storageAccountId string = storage.id
+@secure()
 output storageAccountKey string = storage.listKeys().keys[0].value
