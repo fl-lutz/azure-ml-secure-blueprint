@@ -40,7 +40,7 @@ resource machineLearningWorkspace 'Microsoft.MachineLearningServices/workspaces@
     primaryUserAssignedIdentity: managedIdentityId
     publicNetworkAccess: 'Disabled'
     managedNetwork: {
-      isolationMode: 'AllowInternetOutbound'
+      isolationMode: 'AllowOnlyApprovedOutbound'
       outboundRules: {
         allowOpenAi: {
           type: 'PrivateEndpoint'
